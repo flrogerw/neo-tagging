@@ -19,6 +19,7 @@ class ThreadWorker(threading.Thread):
         self.database = database
         self.text_processor = text_processor
         self.thread_lock = thread_lock
+        self.graph = TagGraph(self.uri, self.user, self.password, self.database)
         super().__init__(*args, **kwargs)
 
     def run(self):
@@ -28,11 +29,11 @@ class ThreadWorker(threading.Thread):
                 self.process(filename)
 
             except queue.Empty:
+                self.graph.close()
                 return
 
     def process(self, filename, air_play_date=1716413530):
         try:
-            graph = TagGraph(self.uri, self.user, self.password, self.database)
             txt = Path(f'corpus_files/Raw_data/{filename}').read_text()
             txt = re.sub(r'[\S]+\.(net|com|org|info|edu|gov|uk|de|ca|jp|fr|au|us|ru|ch|it|nel|se|no|es|mil)[\S]*\s?',
                          '', txt)
@@ -40,12 +41,9 @@ class ThreadWorker(threading.Thread):
             keywords = self.filter_ner_sentences(doc.sentences)
             weighted_keywords = WordBag.get_weight(keywords)
             content_name = f"a_{''.join(random.choices(string.ascii_uppercase + string.digits, k=10))}"
-            graph.create_content(weighted_keywords, content_name, air_play_date)
-            graph.close()
+            self.graph.create_content(weighted_keywords, content_name, air_play_date)
         except Exception as err:
             print(filename, err)
-        finally:
-            graph.close()
 
     def normalize_token(self, t):
         if len(t) > 1:
