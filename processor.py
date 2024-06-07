@@ -53,7 +53,7 @@ def monitor(x, stop):
 if __name__ == '__main__':
     try:
         print('Process Started')
-        text_processor = StanzaNER(['en', 'es', 'ru'])
+        text_processor = StanzaNER(['en'])
         stop_monitor = False
         threads = []
         for i in range(THREAD_COUNT):
