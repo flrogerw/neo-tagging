@@ -11,8 +11,7 @@ import traceback
 
 class ThreadWorker(threading.Thread):
 
-    def __init__(self, jobs_q, user, password, text_processor, thread_lock, port=7687, database="neo4j", scheme="neo4j",
-                 host_name="localhost", *args, **kwargs):
+    def __init__(self, jobs_q, user, password, text_processor, thread_lock, host_name="localhost", port=7687, database="neo4j", scheme="neo4j", *args, **kwargs):
         self.job_queue = jobs_q
         self.uri = f"{scheme}://{host_name}:{port}"
         self.user = user
@@ -41,7 +40,7 @@ class ThreadWorker(threading.Thread):
             keywords = self.filter_ner_sentences(doc.sentences)
             weighted_keywords = WordBag.get_weight(keywords)
             content_name = f"a_{''.join(random.choices(string.ascii_uppercase + string.digits, k=10))}"
-            # graph.create_content(weighted_keywords, content_name, air_play_date)
+            graph.create_content(weighted_keywords, content_name, air_play_date)
             graph.close()
         except Exception as err:
             print(filename, err)

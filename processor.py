@@ -14,6 +14,7 @@ JOB_QUEUE_SIZE = int(os.getenv('JOB_QUEUE_SIZE'))
 THREAD_COUNT = int(os.getenv('THREAD_COUNT'))
 NEO4J_USER = os.getenv('NEO4J_USER')
 NEO4J_PASSWORD = os.getenv('NEO4J_PASSWORD')
+NEO4J_HOST = os.getenv('NEO4J_HOST')
 
 thread_lock = threading.Lock()
 good_record_count = 0
@@ -56,7 +57,7 @@ if __name__ == '__main__':
         stop_monitor = False
         threads = []
         for i in range(THREAD_COUNT):
-            w = ThreadWorker(jobs_q, NEO4J_USER, NEO4J_PASSWORD, text_processor, thread_lock)
+            w = ThreadWorker(jobs_q, NEO4J_USER, NEO4J_PASSWORD, text_processor, thread_lock, NEO4J_HOST)
             threads.append(w)
 
         start_time = datetime.now()
