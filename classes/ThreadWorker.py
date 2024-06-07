@@ -41,7 +41,7 @@ class ThreadWorker(threading.Thread):
             keywords = self.filter_ner_sentences(doc.sentences)
             weighted_keywords = WordBag.get_weight(keywords)
             content_name = f"a_{''.join(random.choices(string.ascii_uppercase + string.digits, k=10))}"
-            graph.create_content(weighted_keywords, content_name, air_play_date)
+            # graph.create_content(weighted_keywords, content_name, air_play_date)
             graph.close()
         except Exception as err:
             print(filename, err)
