@@ -27,8 +27,7 @@ class StanzaNER(Pipeline):
                                                       use_gpu=use_gpu, processors='tokenize,ner')
 
         # Initialize the Stanza pipeline for language identification
-        super().__init__(download_method=DownloadMethod.REUSE_RESOURCES,
-                         lang="en", langid_clean_text=True, use_gpu=False)
+        super().__init__(download_method=DownloadMethod.REUSE_RESOURCES, lang="en", use_gpu=False)
 
     @staticmethod
     def get_language(nlp):
