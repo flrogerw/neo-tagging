@@ -1,5 +1,9 @@
 import boto3
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+JOB_QUEUE_SIZE = int(os.getenv('JOB_QUEUE_SIZE'))
 FILE_NAME = 'transcript.txt'
 EXCLUDED_FILE_NAME = 'delineated_transcript.txt'
 
@@ -23,7 +27,7 @@ class TagS3:
                         if FILE_NAME in obj['Key'] and EXCLUDED_FILE_NAME not in obj['Key']:
                             all_files.append({'Key': obj['Key'], 'LastModified': obj['LastModified']})
             # Get the newest 1000 files
-            return sorted(all_files, key=lambda x: x['LastModified'], reverse=True)[:100]
+            return sorted(all_files, key=lambda x: x['LastModified'], reverse=True)[:JOB_QUEUE_SIZE]
         except Exception as err:
             print(err)
     def get_content(self, file):

@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 
 # Load System ENV VARS
 load_dotenv()
-JOB_QUEUE_SIZE = int(os.getenv('JOB_QUEUE_SIZE'))
 THREAD_COUNT = int(os.getenv('THREAD_COUNT'))
 NEO4J_USER = os.getenv('NEO4J_USER')
 NEO4J_PASSWORD = os.getenv('NEO4J_PASSWORD')
@@ -115,9 +114,8 @@ class Neo:
 
 if __name__ == "__main__":
     count = 0
-    text_processor = StanzaNER(['en', 'es', 'ru'])
+    text_processor = StanzaNER(['en'])
     neo = Neo(NEO4J_USER, NEO4J_PASSWORD, NEO4J_HOST, text_processor)
-
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             future_result = {
