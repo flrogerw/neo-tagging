@@ -2,8 +2,6 @@ import re
 from pathlib import Path
 from classes.TagGraph import TagGraph
 from classes.WordBag import WordBag
-import string
-import random
 import threading
 import queue
 import traceback
@@ -40,8 +38,7 @@ class ThreadWorker(threading.Thread):
             doc = self.text_processor.get_ner('en', txt)
             keywords = self.filter_ner_sentences(doc.sentences)
             weighted_keywords = WordBag.get_weight(keywords)
-            content_name = f"a_{''.join(random.choices(string.ascii_uppercase + string.digits, k=10))}"
-            self.graph.create_content(weighted_keywords, content_name, air_play_date)
+            self.graph.create_content(weighted_keywords, filename, air_play_date)
         except Exception as err:
             print(filename, err)
 

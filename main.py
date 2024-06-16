@@ -1,5 +1,5 @@
 import concurrent.futures
-import hashlib
+import os
 import re
 from pathlib import Path
 from ner.StanzaNER import StanzaNER
@@ -8,27 +8,21 @@ from classes.WordBag import WordBag
 from classes.TagS3 import TagS3
 import string
 import random
-import os
+from dotenv import load_dotenv
+
+# Load System ENV VARS
+load_dotenv()
+JOB_QUEUE_SIZE = int(os.getenv('JOB_QUEUE_SIZE'))
+THREAD_COUNT = int(os.getenv('THREAD_COUNT'))
+NEO4J_USER = os.getenv('NEO4J_USER')
+NEO4J_PASSWORD = os.getenv('NEO4J_PASSWORD')
+NEO4J_HOST = os.getenv('NEO4J_HOST')
+S3_BUCKET = os.getenv('S3_BUCKET')
 
 """
 #txt = Path('corpus_files/transcript.txt').read_text()
     
-        latest_entries = s3.get_latests()
-        for entry in latest_entries:
-            content = s3.get_content(entry)
-            result = hashlib.md5(content.encode())
-            new_hash = result.hexdigest()
-            if hasattr(final, new_hash):
-                next
-            final[new_hash] = content
-            count += 1
-            print(count)
-        for k in final.keys():
-            print(final[k], "\n\n")
-            #lang = StanzaNER.get_language(text_processor(content))
-            #if lang != 'en':
-                #print(lang)
-      
+       
 DATE - absolute or relative dates or periods
 PERSON - People, including fictional
 GPE - Countries, cities, states
@@ -51,18 +45,20 @@ WORK_OF_ART - Titles of books, songs, etc.
 
 class Neo:
 
-    def __init__(self, user, password, text_processor, port=7687, database="neo4j", scheme="neo4j",host_name="localhost"):
+    def __init__(self, user, password, host_name, text_processor, port=7687, database="neo4j", scheme="neo4j"):
         self.uri = f"{scheme}://{host_name}:{port}"
         self.user = user
         self.password = password
         self.database = database
-        # s3 = TagS3('transcription-engine-data-nonprod-stg')
+        self.s3 = TagS3(S3_BUCKET)
         self.text_processor = text_processor
 
-    def process(self, filename, air_play_date=1716413530):
+    def process(self, filename):
         try:
             graph = TagGraph(self.uri, self.user, self.password, self.database)
-            txt = Path(f'corpus_files/Raw_data/{filename}').read_text()
+            #txt = Path(f'corpus_files/Raw_data/{filename}').read_text()
+            air_play_date = int(filename['LastModified'].timestamp())
+            txt = self.s3.get_content(filename)
             txt = re.sub(r'[\S]+\.(net|com|org|info|edu|gov|uk|de|ca|jp|fr|au|us|ru|ch|it|nel|se|no|es|mil)[\S]*\s?',
                          '', txt)
             doc = self.text_processor.get_ner('en', txt)
@@ -74,7 +70,7 @@ class Neo:
         except Exception as err:
             print(filename, err)
         finally:
-            self.graph.close()
+            graph.close()
 
     def normalize_token(self, t):
         if len(t) > 1:
@@ -118,20 +114,20 @@ class Neo:
 
 
 if __name__ == "__main__":
-    # s3 = TagS3('transcription-engine-data-nonprod-stg')
     count = 0
     text_processor = StanzaNER(['en', 'es', 'ru'])
-    neo = Neo("neo4j", "bad_password", text_processor)
+    neo = Neo(NEO4J_USER, NEO4J_PASSWORD, NEO4J_HOST, text_processor)
+
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             future_result = {
-                executor.submit(neo.process, filename, 1716413530): filename for filename in os.listdir('corpus_files/Raw_data')}
+                executor.submit(neo.process, filename): filename for filename in neo.s3.get_latests()}
             for future in concurrent.futures.as_completed(future_result):
                 try:
                     count += 1
                     print(count)
                     # print(future.result())
                 except Exception:
-                        raise
+                    raise
     except Exception as err:
         print(err)
