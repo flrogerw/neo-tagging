@@ -17,6 +17,7 @@ NEO4J_USER = os.getenv('NEO4J_USER')
 NEO4J_PASSWORD = os.getenv('NEO4J_PASSWORD')
 NEO4J_HOST = os.getenv('NEO4J_HOST')
 S3_BUCKET = os.getenv('S3_BUCKET')
+USE_GPU = os.getenv('USE_GPU')
 
 """
 #txt = Path('corpus_files/transcript.txt').read_text()
@@ -114,7 +115,7 @@ class Neo:
 
 if __name__ == "__main__":
     count = 0
-    text_processor = StanzaNER(['en'])
+    text_processor = StanzaNER(['en'], USE_GPU)
     neo = Neo(NEO4J_USER, NEO4J_PASSWORD, NEO4J_HOST, text_processor)
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
