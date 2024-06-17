@@ -102,7 +102,7 @@ class Neo:
                                 elif type(t['id']) is tuple and t['text'].istitle():
                                     nt = text_processor.get_ner('en', t['text'])
                                     nt = nt.to_dict()[0][0]
-                                    if nt["ner"] != "O" and nt['xpos'] in xpos_types:
+                                    if nt["ner"] != "O" and 'xpos' in nt and nt['xpos'] in xpos_types:
                                         temp_ner = nt['text']
                             else:
                                 temp_ner += f" {t['text']}"
