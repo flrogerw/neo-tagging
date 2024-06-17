@@ -118,7 +118,7 @@ if __name__ == "__main__":
     text_processor = StanzaNER(['en'], USE_GPU)
     neo = Neo(NEO4J_USER, NEO4J_PASSWORD, NEO4J_HOST, text_processor)
     try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=THREAD_COUNT) as executor:
             future_result = {
                 executor.submit(neo.process, filename): filename for filename in neo.s3.get_latests()}
             for future in concurrent.futures.as_completed(future_result):
