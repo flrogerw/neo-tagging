@@ -70,7 +70,8 @@ class Neo:
         except Exception as err:
             print(filename, err)
         finally:
-            self.graph.close()
+            x=0
+            # graph.close()
 
     def normalize_token(self, t):
         if len(t) > 1:
