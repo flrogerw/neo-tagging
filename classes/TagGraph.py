@@ -31,12 +31,17 @@ class TagGraph:
         :param keywords: List of keywords to be created
         """
         query = "MERGE (c:CONTENT {content_name: $content_title, airplay_time: $air_play, date_created: TIMESTAMP(), date_modified: TIMESTAMP()}) "
+        #for keyword, name, weight in keywords:
+            #label = f"l_{keyword}"
+            #query += f"""MERGE ({label}:KEYWORD {{name: "{name}"}}) ON CREATE SET {label}.name="{name}", {label}.date_created=timestamp(), {label}.date_modified=timestamp() """
+            #query += f"MERGE (c)-[:CONTAINS {{offset: 0.0, sort_weight: {weight}, date_created: TIMESTAMP(), date_modified: TIMESTAMP() }}]->({label}) "
+        print(query)
         for keyword, name, weight in keywords:
             label = f"l_{keyword}"
-            query += f"""MERGE ({label}:KEYWORD {{name: "{name}"}}) ON CREATE SET {label}.name="{name}", {label}.date_created=timestamp(), {label}.date_modified=timestamp() """
-            query += f"MERGE (c)-[:CONTAINS {{offset: 0.0, sort_weight: {weight}, date_created: TIMESTAMP(), date_modified: TIMESTAMP() }}]->({label}) "
+            print(f"""MERGE ({label}:KEYWORD {{name: "{name}"}}) ON CREATE SET {label}.name="{name}", {label}.date_created=timestamp(), {label}.date_modified=timestamp() """)
+            print(f"MERGE (c)-[:CONTAINS {{offset: 0.0, sort_weight: {weight}, date_created: TIMESTAMP(), date_modified: TIMESTAMP() }}]->({label}) ")
         try:
-            print(query)
+            x=0
             # self.driver.execute_query(
             #  query,
             #  air_play=air_play, content_title=content_title,
