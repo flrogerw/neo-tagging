@@ -30,11 +30,12 @@ class TagGraph:
         Method to create keyword nodes in the graph.
         :param keywords: List of keywords to be created
         """
-        query = "MERGE (c:CONTENT {content_name: $content_title, airplay_time: $air_play, date_created: TIMESTAMP(), date_modified: TIMESTAMP()}) "
+        # query = "MERGE (c:CONTENT {content_name: $content_title, airplay_time: $air_play, date_created: TIMESTAMP(), date_modified: TIMESTAMP()}) "
         #for keyword, name, weight in keywords:
             #label = f"l_{keyword}"
             #query += f"""MERGE ({label}:KEYWORD {{name: "{name}"}}) ON CREATE SET {label}.name="{name}", {label}.date_created=timestamp(), {label}.date_modified=timestamp() """
             #query += f"MERGE (c)-[:CONTAINS {{offset: 0.0, sort_weight: {weight}, date_created: TIMESTAMP(), date_modified: TIMESTAMP() }}]->({label}) "
+        query = f"MERGE (c:CONTENT {{content_name: {content_title}, airplay_time: {air_play}, date_created: TIMESTAMP(), date_modified: TIMESTAMP()}}) "
         print(query)
         for keyword, name, weight in keywords:
             label = f"l_{keyword}"
