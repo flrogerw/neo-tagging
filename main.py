@@ -58,7 +58,6 @@ class Neo:
         try:
             # graph = TagGraph(self.uri, self.user, self.password, self.database)
             air_play_date = int(filename['LastModified'].timestamp())
-            print(filename)
             txt = self.s3.get_content(filename)
             txt = re.sub(r'[\S]+\.(net|com|org|info|edu|gov|uk|de|ca|jp|fr|au|us|ru|ch|it|nel|se|no|es|mil)[\S]*\s?',
                          '', txt)
