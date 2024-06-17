@@ -52,11 +52,10 @@ class Neo:
         self.database = database
         self.s3 = TagS3(S3_BUCKET)
         self.text_processor = text_processor
-        self.graph = TagGraph(self.uri, self.user, self.password, self.database)
 
     def process(self, filename):
         try:
-            # graph = TagGraph(self.uri, self.user, self.password, self.database)
+            graph = TagGraph(self.uri, self.user, self.password, self.database)
             air_play_date = int(filename['LastModified'].timestamp())
             txt = self.s3.get_content(filename)
             txt = re.sub(r'[\S]+\.(net|com|org|info|edu|gov|uk|de|ca|jp|fr|au|us|ru|ch|it|nel|se|no|es|mil)[\S]*\s?',
@@ -65,12 +64,11 @@ class Neo:
             keywords = self.filter_ner_sentences(doc.sentences)
             weighted_keywords = WordBag.get_weight(keywords)
             content_name = f"a_{''.join(random.choices(string.ascii_uppercase + string.digits, k=10))}"
-            self.graph.create_content(weighted_keywords, content_name, air_play_date)
+            graph.create_content(weighted_keywords, content_name, air_play_date)
         except Exception as err:
             print(filename, err)
         finally:
-            x=0
-            # graph.close()
+            graph.close()
 
     def normalize_token(self, t):
         if len(t) > 1:
