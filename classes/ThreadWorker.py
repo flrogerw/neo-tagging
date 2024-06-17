@@ -4,7 +4,7 @@ from classes.TagGraph import TagGraph
 from classes.WordBag import WordBag
 import threading
 import queue
-import traceback
+from ner.StanzaNER import StanzaNER
 
 
 class ThreadWorker(threading.Thread):

@@ -45,24 +45,25 @@ WORK_OF_ART - Titles of books, songs, etc.
 
 class Neo:
 
-    def __init__(self, user, password, host_name, text_processor, port=7687, database="neo4j", scheme="neo4j"):
+    def __init__(self, user, password, host_name, port=7687, database="neo4j", scheme="neo4j"):
         self.uri = f"{scheme}://{host_name}:{port}"
         self.user = user
         self.password = password
         self.database = database
         self.s3 = TagS3(S3_BUCKET)
-        self.text_processor = text_processor
+        # self.text_processor = text_processor
 
     def process(self, filename):
         try:
+            text_processor = StanzaNER(['en'], USE_GPU)
             graph = TagGraph(self.uri, self.user, self.password, self.database)
             #txt = Path(f'corpus_files/Raw_data/{filename}').read_text()
             air_play_date = int(filename['LastModified'].timestamp())
             txt = self.s3.get_content(filename)
             txt = re.sub(r'[\S]+\.(net|com|org|info|edu|gov|uk|de|ca|jp|fr|au|us|ru|ch|it|nel|se|no|es|mil)[\S]*\s?',
                          '', txt)
-            doc = self.text_processor.get_ner('en', txt)
-            keywords = self.filter_ner_sentences(doc.sentences)
+            doc = text_processor.get_ner('en', txt)
+            keywords = self.filter_ner_sentences(doc.sentences, text_processor)
             weighted_keywords = WordBag.get_weight(keywords)
             content_name = f"a_{''.join(random.choices(string.ascii_uppercase + string.digits, k=10))}"
             graph.create_content(weighted_keywords, content_name, air_play_date)
@@ -79,7 +80,7 @@ class Neo:
         else:
             return t[0]
 
-    def filter_ner_sentences(self, sentences):
+    def filter_ner_sentences(self, sentences, text_processor):
         final = []
         xpos_types = ['NNP', 'NNPS', 'DT']
         # ner_types = ['LOC', 'PERSON', 'PERCENT', 'ORG', 'WORK_OF_ART', 'GPE', 'EVENT', 'FAC', 'PRODUCT', 'NORP']
@@ -115,8 +116,8 @@ class Neo:
 
 if __name__ == "__main__":
     count = 0
-    text_processor = StanzaNER(['en'], USE_GPU)
-    neo = Neo(NEO4J_USER, NEO4J_PASSWORD, NEO4J_HOST, text_processor)
+    #text_processor = StanzaNER(['en'], USE_GPU)
+    neo = Neo(NEO4J_USER, NEO4J_PASSWORD, NEO4J_HOST)
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             future_result = {
