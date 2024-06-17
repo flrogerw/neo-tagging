@@ -25,7 +25,6 @@ class TagGraph:
         """
         self.driver.close()
 
-
     def create_content(self, keywords, content_title, air_play):
         """
         Method to create keyword nodes in the graph.
@@ -37,11 +36,11 @@ class TagGraph:
             query += f"""MERGE ({label}:KEYWORD {{name: "{name}"}}) ON CREATE SET {label}.name="{name}", {label}.date_created=timestamp(), {label}.date_modified=timestamp() """
             query += f"MERGE (c)-[:CONTAINS {{offset: 0.0, sort_weight: {weight}, date_created: TIMESTAMP(), date_modified: TIMESTAMP() }}]->({label}) "
         try:
-            self.driver.execute_query(
-                query,
-                air_play=air_play, content_title=content_title,
-                database_=self.database)
+            print(query)
+            # self.driver.execute_query(
+            #  query,
+            #  air_play=air_play, content_title=content_title,
+            # database_=self.database)
         except (DriverError, Neo4jError) as exception:  # Catch Neo4j driver or database errors
             logging.error("%s raised an error: \n%s", query, exception)  # Log the error
             raise
-

@@ -23,10 +23,10 @@ class StanzaNER(Pipeline):
         self.text_processors = {}
         for language in languages:
             # Initialize a stanza pipeline for each language
-            self.text_processors[language] = Pipeline(download_method=DownloadMethod.REUSE_RESOURCES, lang=language, processors='tokenize,ner')
+            self.text_processors[language] = Pipeline(download_method=DownloadMethod.REUSE_RESOURCES, lang=language, processors='tokenize,mwt,ner')
 
         # Initialize the Stanza pipeline for language identification
-        # super().__init__(download_method=DownloadMethod.REUSE_RESOURCES, lang="en", use_gpu=use_gpu, processors='tokenize,ner')
+        # super().__init__(download_method=DownloadMethod.REUSE_RESOURCES, lang="en", use_gpu=use_gpu, processors='tokenize,ner,mwt')
 
     @staticmethod
     def get_language(nlp):
